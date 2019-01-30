@@ -10,16 +10,10 @@ function createUpdate(snap, context, isNew) {
 
     var a = context.params.id1;
     var b = context.params.id2;
-
-    if (isNew) {
-        var userID = snap.data().createdBy;
-    } else {
-        var userID = snap.after.data().createdBy;
-    }
-
     var logsToDbPath = 'logs/' + a + "_" + b;
 
     if (isNew) {
+        var userID = snap.data().createdBy;
         var logsObject = {
             content: snap.data().content || "noContet",
             createdAt: snap.data().createdAt.toDate(),
@@ -27,6 +21,7 @@ function createUpdate(snap, context, isNew) {
             companyId: b,
         };
     } else {
+        var userID = snap.after.data().createdBy;
         var logsObject = {
             content: snap.after.data().content || "noContet",
             createdAt: snap.after.data().createdAt.toDate(),
@@ -89,9 +84,7 @@ exports.updateLog = functions.firestore
 exports.deleteLog = functions.firestore
     .document('clients/{id1}/logs/{id2}')
     .onDelete((snap, context) => {
-        var a = context.params.id1;
-        var b = context.params.id2;
-        var logsToDbPath = 'logs/' + a + "_" + b;
+        var logsToDbPath = 'logs/' + context.params.id1 + "_" + context.params.id2;
         var deletLog = db.doc(logsToDbPath).delete()
         return console.log("DELETING " + logsToDbPath)
     })
